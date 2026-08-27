@@ -17,10 +17,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 
-// ======================================================================
-// 1. ENUMS (Tipos Enumerados Nativos do Postgres)
-// ======================================================================
-
 export const statusAgendamentoEnum = pgEnum("status_agendamento", [
   "AGUARDANDO_FUNCIONARIO", // Criado pelo cliente, ainda sem funcionário associado
   "PENDENTE", // Funcionário já assumiu, aguardando confirmação/andamento
@@ -31,7 +27,7 @@ export const statusAgendamentoEnum = pgEnum("status_agendamento", [
 ]);
 
 // ======================================================================
-// 2. TABELAS (SCHEMAS DAS ENTIDADES)
+//TABELAS
 // ======================================================================
 
 // Tabela de Clientes
@@ -149,7 +145,7 @@ export const horarioFuncionamento = pgTable(
 );
 
 // ======================================================================
-// 3. RELACIONAMENTOS (DRIZZLE RELATIONS API)
+//RELACIONAMENTOS
 // ======================================================================
 
 export const usuarioRelations = relations(usuario, ({ many }) => ({
