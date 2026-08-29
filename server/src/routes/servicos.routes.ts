@@ -7,6 +7,5 @@ router.get("/", servicosController.buscarServicos); // GET /servicos?nome=corte
 router.post("/", servicosController.criarServico);
 router.put("/:id", servicosController.atualizarServico);
 router.delete("/:id", servicosController.desativarServico);
-router.get("/teste", servicosController.testarRota);
 
 export default router;
