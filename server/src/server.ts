@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import dotenv from "dotenv";
 import { redisClient } from "./config/redis.js";
 import servicosRoutes from "./routes/servicos.routes.js";
+import usuariosRoutes from "./routes/usuarios.routes.js";
 
 dotenv.config({ quiet: true });
 
@@ -22,6 +23,7 @@ app.get("/test", async (req: Request, res: Response) => {
 });
 
 app.use("/servicos", servicosRoutes);
+app.use("/usuarios", usuariosRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server rodando na porta ${PORT}`);

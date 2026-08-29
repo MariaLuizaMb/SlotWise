@@ -1,6 +1,6 @@
 import { db } from "../config/database.js";
 import { usuario } from "../models/schema.js";
-import { eq, and, ilike, gte, lte, type SQL } from "drizzle-orm";
+import { eq, and, ilike, gte, lt, type SQL } from "drizzle-orm";
 
 export async function buscarUsuario(filtros: {
   id?: number;
@@ -28,7 +28,14 @@ export async function buscarUsuario(filtros: {
   }
 
   if (filtros.criadoEm) {
-    condicoes.push(gte(usuario.created_at, filtros.criadoEm));
+    const inicioDia = new Date(filtros.criadoEm);
+    inicioDia.setHours(0, 0, 0, 0);
+
+    const inicioDiaSeguinte = new Date(inicioDia);
+    inicioDiaSeguinte.setDate(inicioDiaSeguinte.getDate() + 1);
+
+    condicoes.push(gte(usuario.created_at, inicioDia));
+    condicoes.push(lt(usuario.created_at, inicioDiaSeguinte));
   }
 
   return db
@@ -44,21 +51,22 @@ export async function novoUsuario(dados: { nome: string; telefone: string }) {
 }
 
 export async function editarUsuario(dados: {
+  id: number;
   nome: string;
   telefone: string;
   ativo: boolean;
 }) {
   const [usuarioExistente] = await buscarUsuario({
-    nome: dados.nome,
+    id: dados.id,
     apenasAtivos: false,
   });
 
   if (!usuarioExistente) {
-    throw new Error("Serviço não encontrado");
+    throw new Error("Usuário não econtrado");
   }
 
   if (!usuarioExistente.ativo) {
-    throw new Error("Não é possível editar um serviço desativado");
+    throw new Error("Não é possível editar um usuário desativado");
   }
 
   const [usuarioEditado] = await db
@@ -67,14 +75,14 @@ export async function editarUsuario(dados: {
       nome: dados.nome,
       telefone: dados.telefone,
     })
-    .where(eq(usuario.nome, dados.nome))
+    .where(eq(usuario.id_user, dados.id))
     .returning();
 
   return usuarioEditado;
 }
 
-export async function deletarUsuario(nome: string) {
-  const [usuarioExistente] = await buscarUsuario({ nome, apenasAtivos: false });
+export async function deletarUsuario(id: number) {
+  const [usuarioExistente] = await buscarUsuario({ id, apenasAtivos: false });
   if (!usuarioExistente) {
     throw new Error("Usuário não encontrado");
   }
@@ -85,7 +93,7 @@ export async function deletarUsuario(nome: string) {
   const [usuarioDesativado] = await db
     .update(usuario)
     .set({ ativo: false })
-    .where(eq(usuario.nome, nome))
+    .where(eq(usuario.id_user, id))
     .returning();
 
   return usuarioDesativado;
