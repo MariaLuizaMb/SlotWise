@@ -7,3 +7,5 @@ router.get("/", funcionariosController.buscarFuncionario);
 router.post("/", funcionariosController.novoFuncionario);
 router.put("/:id", funcionariosController.editarFuncionario);
 router.delete("/:id", funcionariosController.deletarFuncionario);
+
+export default router;
